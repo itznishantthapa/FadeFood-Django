@@ -19,11 +19,12 @@ def create_user(request):
                 role = data.get('role', 'customer')
                 name = data.get('name')
                 phone = data.get('phone')
+                profile_pic = data.get('profile_pic')
 
                 if CustomUser.objects.filter(username=username).exists():
                         return Response({'msg': 'Email already exists'}, status=400)
                 
-                user = CustomUser.objects.create_user(username=username, password=password, email=email,role=role,name=name,phone=phone)
+                user = CustomUser.objects.create_user(username=username, password=password, email=email,role=role,name=name,phone=phone,profile_pic=profile_pic)
                 user.save()
                 refresh = RefreshToken.for_user(user)
                 access_token = refresh.access_token
@@ -55,9 +56,10 @@ def edit_user_details(request):
         try:
                 data=request.data
                 user=request.user
-                
+
                 user.name=data.get('name',user.name)
                 user.phone=data.get('phone',user.phone)
+                user.profile_pic=data.get('profile_pic',user.profile_pic)
                 user.save()
                 return Response({"msg":"User Details Updated Successfully"},status=200)
         except :
@@ -70,4 +72,4 @@ def edit_user_details(request):
 @permission_classes([IsAuthenticated])
 def get_user_details(request):
         user=request.user
-        return Response({"data":{'username':user.name,'role':user.role},'msg':'We Send You --> Name and Role'},status=200)
+        return Response({"data":{'username':user.name,'role':user.role,'profile_picture':user.profile_pic.url},'msg':'We Send You --> Name and Role'},status=200)

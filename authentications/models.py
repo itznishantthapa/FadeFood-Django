@@ -11,4 +11,5 @@ class CustomUser(AbstractUser):
     name=models.CharField(max_length=100,blank=True,null=True)
     email=models.EmailField(unique=True)
     phone= models.CharField(max_length=15,blank=True,null=True)
+    profile_pic=models.ImageField(upload_to='profile_pics/',blank=True,null=True)
 
