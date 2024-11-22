@@ -49,7 +49,20 @@ def login_user(request):
         except :
                 return Response({"msg":"Something went worng in the Backend"},status=400)
     
-   
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_user_details(request):
+        try:
+                data=request.data
+                user=request.user
+                
+                user.name=data.get('name',user.name)
+                user.phone=data.get('phone',user.phone)
+                user.save()
+                return Response({"msg":"User Details Updated Successfully"},status=200)
+        except :
+                return Response({"msg":"Something went worng in the Backend"},status=400)
+
 
 
 
