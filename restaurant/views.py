@@ -26,8 +26,8 @@ def register_restaurant(request):
 @permission_classes([IsSeller])
 def edit_restaurant(request):
         try:
-            owner = request.user
-            restaurant = owner.restaurant
+            user = request.user
+            restaurant = user.restaurant
             serializer = RestaurantSerializer(restaurant, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
