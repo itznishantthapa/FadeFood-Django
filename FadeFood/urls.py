@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from authentications.views import create_user, login_user,get_user_details, edit_user_details
+from restaurant.views import register_restaurant, edit_restaurant
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -26,4 +27,6 @@ urlpatterns = [
     path('edit_user_details/', edit_user_details),
     path('login_user/', login_user),
     path('get_user_details/', get_user_details),
+    path('register_restaurant/', register_restaurant),
+    path('edit_restaurant/', edit_restaurant),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
