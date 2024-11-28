@@ -8,6 +8,8 @@ from .models import CustomUser
 from .permissions import IsSeller
 from rest_framework_simplejwt.tokens import RefreshToken
 
+DEFAULT_PROFILE_PIC_URL = 'https://www.pngfind.com/pngs/m/292-2924933_image-result-for-png-file-user-icon-black.png'
+
 # Create your views here.
 @api_view(['POST'])
 def create_user(request):
@@ -22,15 +24,15 @@ def create_user(request):
                 profile_pic = data.get('profile_pic')
 
                 if CustomUser.objects.filter(username=username).exists():
-                        return Response({'msg': 'Email already exists'}, status=400)
+                        return Response({'ofBackendMessage': 'Email already exists'}, status=400)
                 
                 user = CustomUser.objects.create_user(username=username, password=password, email=email,role=role,name=name,phone=phone,profile_pic=profile_pic)
                 user.save()
                 refresh = RefreshToken.for_user(user)
                 access_token = refresh.access_token
-                return Response({"msg":"Account Created Successfully","access":str(access_token),"refresh":str(refresh)},status=200)
+                return Response({"ofBackendMessage":"Account Created Successfully","access":str(access_token),"refresh":str(refresh)},status=200)
         except :
-                return Response({"msg":"Something went worng in the Backend"},status=400)
+                return Response({"ofBackendMessage":"Something went worng in the Backend"},status=400)
         
 
 @api_view(['POST'])
@@ -44,11 +46,22 @@ def login_user(request):
                 if user:
                         refresh = RefreshToken.for_user(user)
                         access_token = refresh.access_token
-                        return Response({'msg': 'Login successful !','access': str(access_token),'refresh': str(refresh),},status=200)
+                        return Response({'ofBackendMessage': 'Login successful !','access': str(access_token),'refresh': str(refresh),},status=200)
                 else:
-                        return Response({"msg": "Invalid credentials"}, status=400)
+                        return Response({"ofBackendMessage": "Invalid credentials"}, status=400)
         except :
-                return Response({"msg":"Something went worng in the Backend"},status=400)
+                return Response({"ofBackendMessage":"Something went worng in the Backend"},status=400)
+        
+@api_view(['POST'])
+def refresh_token(request):
+        try:
+                data = request.data
+                refresh = data.get('refresh')
+                token = RefreshToken(refresh)
+                access = str(token.access_token)
+                return Response({ 'access': str(access)})
+        except :
+                return Response({"ofBackendMessage":"Something went worng in the Backend"},status=400)
     
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -59,11 +72,12 @@ def edit_user_details(request):
 
                 user.name=data.get('name',user.name)
                 user.phone=data.get('phone',user.phone)
+                user.email=data.get('email',user.email)
                 user.profile_pic=data.get('profile_pic',user.profile_pic)
                 user.save()
-                return Response({"msg":"User Details Updated Successfully"},status=200)
+                return Response({"ofBackendMessage":"User Details Updated Successfully !"},status=200)
         except :
-                return Response({"msg":"Something went worng in the Backend"},status=400)
+                return Response({"ofBackendMessage":"Something went worng in the Backend"},status=400)
 
 
 
@@ -72,4 +86,13 @@ def edit_user_details(request):
 @permission_classes([IsAuthenticated])
 def get_user_details(request):
         user=request.user
-        return Response({"data":{'username':user.name,'role':user.role,'profile_picture':user.profile_pic.url},'msg':'We Send You --> Name and Role'},status=200)
+        #Using ternary operator to check if the user has profile pic or not : value_if_true if condition else value_if_false
+        profile_pic_url = user.profile_pic.url if user.profile_pic else DEFAULT_PROFILE_PIC_URL    #return the user details
+        user_details={
+                'name':user.name,
+                'role':user.role,
+                'email':user.email,
+                'phone':user.phone,
+                'profile_picture':profile_pic_url
+        }
+        return Response({"ofBackendData":user_details,'ofMessage':'We Send You --> Name and Role'},status=200)
