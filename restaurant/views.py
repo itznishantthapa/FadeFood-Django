@@ -11,7 +11,7 @@ from rest_framework.response import Response
 def register_restaurant(request):
         try:
             owner = request.user
-            request.data['owner'] = owner.id          
+            request.data['owner'] = owner.id  # (what if i use this kind of technqiue, huh GPT?)       
             serializer = RestaurantSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
