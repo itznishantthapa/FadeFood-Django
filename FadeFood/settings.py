@@ -50,8 +50,8 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # JWT Authentication < --------------------
-        # 'rest_framework.authentication.BasicAuthentication',  # Basic Authentication easy with POSTMAN < --------------------
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # JWT Authentication < --------------------
+        'rest_framework.authentication.BasicAuthentication',  # Basic Authentication easy with POSTMAN < --------------------
     ),
 }
 

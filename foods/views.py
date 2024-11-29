@@ -34,7 +34,7 @@ def add_food(request):
 
             food_serializer = FoodSerializer(food_data)
             image_serializer = FoodImageSerializer(image_instances, many=True)
-            return Response({"ofBackendData":food_serializer.data,'ofFoodImages':image_serializer.data,"msg":f"Food Added Successfully In {restaurant.name}"}, status=200)
+            return Response({"ofBackendData":food_serializer.data,"msg":f"Food Added Successfully In {restaurant.name}"}, status=200)
 
         except:
             return Response({"msg":"Something went wrong in the Backend"}, status=400)
