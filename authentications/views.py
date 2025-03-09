@@ -89,6 +89,7 @@ def get_user_details(request):
         #Using ternary operator to check if the user has profile pic or not : value_if_true if condition else value_if_false
         profile_pic_url = user.profile_pic.url if user.profile_pic else DEFAULT_PROFILE_PIC_URL    #return the user details
         user_details={
+                
                 'name':user.name,
                 'role':user.role,
                 'email':user.email,

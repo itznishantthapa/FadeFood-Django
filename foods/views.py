@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializers import FoodSerializer ,FoodImageSerializer
 from .models import food ,food_image
+from .models import restaurant
 from authentications.permissions import IsSeller ,IsCustomer
 
 @api_view(['POST'])
@@ -10,9 +11,12 @@ from authentications.permissions import IsSeller ,IsCustomer
 def add_food(request):
         try:
  
-            restaurant = request.user.restaurant  # Access Restaurant via reverse OneToOneField
+            restaurant = request.user.restaurant     # Access Restaurant via reverse OneToOneField
+            food_restaurant = restaurant.name
+            food_location = f"{restaurant.street_address}, {restaurant.city}"
             food_name = request.data.get('food_name')
             food_price = request.data.get('food_price')
+            is_vegetarian=request.data.get('is_vegetarian')=='true'
             images = request.FILES.getlist('images') 
  
 
@@ -21,6 +25,9 @@ def add_food(request):
                  restaurant_name=restaurant,
                  food_name=food_name, 
                  food_price=food_price,
+                 food_restaurant=food_restaurant,
+                 food_location=food_location,
+                 is_vegetarian=is_vegetarian
                 )
 
             image_instances=[]
@@ -50,6 +57,26 @@ def get_food(request):
         return Response({"ofBackendData": serializer.data}, status=200)
     except Exception as e:
         return Response({"msg": str(e)}, status=400)
+    
+
+@api_view(['GET'])
+@permission_classes([IsCustomer])  # Allow customers to access
+def get_food_by_restaurant(request):
+    try:
+        restaurant_id = request.query_params.get("restaurant_id")
+        if not restaurant_id:
+            return Response({"msg": "Restaurant ID is required"}, status=400)
+        
+        get_restaurant = restaurant.objects.get(id=restaurant_id)  # Get restaurant
+        foods = get_restaurant.food.filter(is_available=True)  # Get available food
+        
+        serializer = FoodSerializer(foods, many=True)
+        return Response({"ofBackendData": serializer.data}, status=200)
+    except restaurant.DoesNotExist:
+        return Response({"msg": "Restaurant not found"}, status=404)
+    except Exception as e:
+        return Response({"msg": str(e)}, status=400)
+
 
 @api_view(['PUT'])
 @permission_classes([IsSeller])
@@ -61,6 +88,7 @@ def edit_food(request):
 
         # Fetch the food item
         food_data = food.objects.get(id=food_id, restaurant_name=request.user.restaurant)
+        
 
         # Update food details using serializer
         serializer = FoodSerializer(food_data, data=request.data, partial=True)
@@ -68,14 +96,31 @@ def edit_food(request):
             serializer.save()
         else:
             return Response({"msg": serializer.errors}, status=400)
-
+        print('-----------------here')
         # Handle new images
         images = request.FILES.getlist('images')
+        print(len(images))
+        # valid_uris = request.FILES.getlist('images')
         if images:
-            # Delete old images and add new ones
-            food_data.foodimage.all().delete()
-            for img in images:
-                food_image.objects.create(food_itemforFK=food_data, image=img)
+            food_images = food_data.foodimage.all()
+            if len(images)==1:
+                food_images.last().delete()
+                for img in images:
+                    food_image.objects.create(food_itemforFK=food_data, image=img)
+            elif len(images)==2:
+                food_images[1].delete()
+                food_images.last().delete()
+                for img in images:
+                    food_image.objects.create(food_itemforFK=food_data, image=img)
+
+            elif len(images)==3:
+                food_images.delete()
+                for img in images:
+                    food_image.objects.create(food_itemforFK=food_data, image=img)
+
+
+            
+
 
         # Serialize updated data
         updated_serializer = FoodSerializer(food_data)

@@ -17,8 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from authentications.views import create_user, login_user,get_user_details, edit_user_details,refresh_token
-from restaurant.views import register_restaurant, edit_restaurant, get_restaurant
-from foods.views import add_food ,edit_food,delete_food,get_food, get_all_food
+from restaurant.views import register_restaurant, edit_restaurant, get_restaurant, get_specific_restaurant
+from foods.views import add_food ,edit_food,delete_food,get_food, get_all_food, get_food_by_restaurant
+from payment.views import initiate_payment
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -32,9 +33,12 @@ urlpatterns = [
     path('register_restaurant/', register_restaurant),
     path('edit_restaurant/', edit_restaurant),
     path('get_restaurant/', get_restaurant),
+    path('get_food_by_restaurant/', get_food_by_restaurant ),
+    path('get_specific_restaurant/', get_specific_restaurant),
     path('add_food/', add_food),
     path('edit_food/', edit_food),
     path('delete_food/', delete_food),
     path('get_food/', get_food),
     path('get_all_food/', get_all_food),
+    path("payment/initiate/", initiate_payment),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

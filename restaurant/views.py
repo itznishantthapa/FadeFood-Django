@@ -1,9 +1,12 @@
+from logging import exception
 from django.shortcuts import render
 from .serializers import RestaurantSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from authentications.permissions import IsSeller
+from authentications.permissions import IsSeller, IsCustomer
 from rest_framework.response import Response
+from .models import restaurant
+from authentications.models import CustomUser
 
 
 @api_view(['POST'])
@@ -47,4 +50,18 @@ def get_restaurant(request):
             return Response({'ofBackendData':serializer.data}, status=200)
         except:
             return Response({"msg":"Something went wrong in the Backend"}, status=400)
-
+        
+@api_view(['GET'])
+def get_specific_restaurant(request):
+        try:
+            print('here1')
+            restaurant_id = request.query_params.get('restaurant_name')
+            print('here2',restaurant_id)
+            restaurantObj = restaurant.objects.get(id=restaurant_id)
+            print('here3')
+            print('here3')
+            serializer = RestaurantSerializer(restaurantObj)
+            print('here4')
+            return Response({'ofBackendData':serializer.data}, status=200)
+        except:
+            return Response({"msg":"Something went wrong in the Backend"}, status=400)

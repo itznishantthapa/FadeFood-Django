@@ -45,7 +45,8 @@ INSTALLED_APPS = [
 
     'authentications',
     'foods',
-    'restaurant'
+    'restaurant',
+    'payment'
 ]
 
 REST_FRAMEWORK = {
