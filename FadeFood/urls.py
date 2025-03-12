@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from authentications.views import create_user, login_user,get_user_details, edit_user_details
-from restaurant.views import register_restaurant, edit_restaurant
-from foods.views import add_food ,edit_food,delete_food,get_food, get_all_food
+from authentications.views import create_user, login_user,get_user_details, edit_user_details,refresh_token
+from restaurant.views import register_restaurant, edit_restaurant, get_restaurant, get_specific_restaurant
+from foods.views import add_food ,edit_food,delete_food,get_food, get_all_food, get_food_by_restaurant
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -27,9 +27,13 @@ urlpatterns = [
     path('create_user/', create_user),
     path('edit_user_details/', edit_user_details),
     path('login_user/', login_user),
+    path('refresh_token/', refresh_token),
     path('get_user_details/', get_user_details),
     path('register_restaurant/', register_restaurant),
     path('edit_restaurant/', edit_restaurant),
+    path('get_restaurant/', get_restaurant),
+    path('get_food_by_restaurant/', get_food_by_restaurant ),
+    path('get_specific_restaurant/', get_specific_restaurant),
     path('add_food/', add_food),
     path('edit_food/', edit_food),
     path('delete_food/', delete_food),
